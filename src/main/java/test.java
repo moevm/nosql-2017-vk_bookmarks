@@ -1,8 +1,10 @@
   import com.mongodb.*;
+  import com.vk.api.sdk.client.TransportClient;
+  import com.vk.api.sdk.client.VkApiClient;
+  import com.vk.api.sdk.httpclient.HttpTransportClient;
 
-public class test {
+  public class test {
     public static void main(String[] args) {
-
         try {
             MongoClient mongoClient = new MongoClient(new ServerAddress("localhost", 27017));
 
