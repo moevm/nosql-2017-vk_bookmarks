@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="VkAuth">
+   <children>
+      <Button id="testButton" layoutX="99.0" layoutY="151.0" mnemonicParsing="false" prefHeight="148.0" prefWidth="338.0" text="Button" />
+      <Label id="testLabel" layoutX="183.0" layoutY="46.0" prefHeight="77.0" prefWidth="234.0" text="Label" />
+      <WebView id="authWebView" cache="true" layoutX="4.0" layoutY="7.0" prefHeight="607.0" prefWidth="904.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</AnchorPane>
