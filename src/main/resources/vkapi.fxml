@@ -7,10 +7,69 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="VkAuth">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI">
    <children>
-      <Button id="testButton" layoutX="99.0" layoutY="151.0" mnemonicParsing="false" prefHeight="148.0" prefWidth="338.0" text="Button" />
-      <Label id="testLabel" layoutX="183.0" layoutY="46.0" prefHeight="77.0" prefWidth="234.0" text="Label" />
-      <WebView id="authWebView" cache="true" layoutX="4.0" layoutY="7.0" prefHeight="607.0" prefWidth="904.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <TabPane fx:id="mainTabPane" prefHeight="600.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="peopleTab" text="People">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="peopleFindBtn" layoutX="14.0" layoutY="45.0" mnemonicParsing="false" onAction="#peopleFind" text="Find" />
+                        <Button fx:id="peopleShowAllBtn" layoutX="158.0" layoutY="45.0" mnemonicParsing="false" onAction="#peopleShowAll" text="Show all" />
+                        <TextField fx:id="peopleTextField" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="218.0" promptText="type here" />
+                        <VBox fx:id="peopleVBox" layoutX="14.0" layoutY="82.0" prefHeight="485.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="photoTab" text="Photo">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="photoTextField" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="218.0" promptText="type here" />
+                        <Button fx:id="photoShowAllBtn" layoutX="159.0" layoutY="45.0" mnemonicParsing="false" onAction="#photoShowAll" text="Show all" />
+                        <Button fx:id="photoFindBtn" layoutX="14.0" layoutY="45.0" mnemonicParsing="false" onAction="#photoFind" text="Find" />
+                        <VBox fx:id="photosVBox" layoutX="117.0" layoutY="82.0" prefHeight="485.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="postsTab" text="Posts">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="postFindBtn" layoutX="14.0" layoutY="45.0" mnemonicParsing="false" onAction="#postFind" text="Find" />
+                        <Button fx:id="postShowAllBtn" layoutX="159.0" layoutY="45.0" mnemonicParsing="false" onAction="#postShowAll" text="Show all" />
+                        <TextField fx:id="postTextField" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="218.0" promptText="type here" />
+                        <VBox fx:id="postVBox" layoutX="66.0" layoutY="82.0" prefHeight="485.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
+                     </children></AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="videoTab" text="Video">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="videoTextField" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="218.0" promptText="type here" />
+                        <Button fx:id="videoShowAllBtn" layoutX="159.0" layoutY="45.0" mnemonicParsing="false" onAction="#videoShowAll" text="Show all" />
+                        <Button fx:id="videoFindBtn" layoutX="14.0" layoutY="45.0" mnemonicParsing="false" onAction="#videoFind" text="Find" />
+                        <VBox fx:id="videoVBox" layoutX="146.0" layoutY="82.0" prefHeight="485.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0" />
+                     </children></AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="linksTab" text="Links">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+            <Tab fx:id="authTab" onSelectionChanged="#authorizeRequired" text="Auth">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <WebView fx:id="authWebView" cache="true" layoutX="-6.0" layoutY="2.0" prefHeight="567.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>

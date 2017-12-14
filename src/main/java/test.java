@@ -1,40 +1,31 @@
   import com.mongodb.*;
-  import com.vk.api.sdk.client.TransportClient;
-  import com.vk.api.sdk.client.VkApiClient;
-  import com.vk.api.sdk.httpclient.HttpTransportClient;
+  import com.mongodb.client.MongoCollection;
+  import com.mongodb.client.MongoCursor;
+  import com.mongodb.client.MongoDatabase;
+  import org.bson.Document;
 
   public class test {
-    public static void main(String[] args) {
-        try {
-            MongoClient mongoClient = new MongoClient(new ServerAddress("localhost", 27017));
-
-            DB db = mongoClient.getDB("mydb");
-
-            DBCollection coll = db.getCollection("testCollection");
-            mongoClient.setWriteConcern(WriteConcern.JOURNALED);
-
-            BasicDBObject doc = new BasicDBObject("name", "MongoDB")
-                    .append("type", "database")
-                    .append("count", 1)
-                    .append("info", new BasicDBObject("x", 123123123).append("y", 345));
-            coll.insert(doc);
-
-        DBCursor cursor = coll.find();
-        try{
-            while(cursor.hasNext()){
-                System.out.println(cursor.next());
-            }
-        } finally {
-            cursor.close();
-        }
+      public static void main(String[] args) {
+          MongoClient mongoClient = new MongoClient("localhost", 27017);
+          MongoDatabase db = mongoClient.getDatabase("mydb");
 
 
-        } catch (java.net.UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
+          MongoCollection coll = db.getCollection("testCollection");
 
-}
+          Document doc = new Document("name", "MongoDB")
+                  .append("type", "database")
+                  .append("count", 1)
+                  .append("info", new Document("x", 123123123).append("y", 345));
+          coll.insertOne(doc);
+
+          MongoCursor cursor = coll.find().iterator();
+          while (cursor.hasNext()) {
+              System.out.println(cursor.next());
+
+          }
+
+      }
+  }
 
 /*
 mongo
