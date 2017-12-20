@@ -1,5 +1,7 @@
 import com.mongodb.DBObject;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,31 +21,26 @@ public class UI extends Application {
     @FXML
     Tab peopleTab = new Tab();
     @FXML
-    VBox peopleVBox;
+    ScrollPane peopleScrollPane = new ScrollPane();
     @FXML
     TextField peopleTextField;
 
     @FXML
-    Tab photoTab = new Tab();
-    @FXML
-    VBox photosVBox;
-    @FXML
-    TextField photoTextField;
-
-    @FXML
     Tab postsTab = new Tab();
     @FXML
-    VBox postVBox;
+    ScrollPane postsScrollPane = new ScrollPane();
     @FXML
     TextField postTextField;
+    @FXML
+    TextField postAdvanced;
 
     @FXML
     Tab videoTab = new Tab();
-    @FXML
-    VBox videoVBox;
+
     @FXML
     TextField videoTextField;
-
+    @FXML
+    ScrollPane videoScrollPane = new ScrollPane();
     @FXML
     Tab linksTab = new Tab();
     @FXML
@@ -59,131 +56,164 @@ public class UI extends Application {
 
     @FXML
     public void peopleShowAll(){
-        peopleVBox.getChildren().clear();
+
         List<Document> list = DBController.getPeople();
+
         if(list.size() == 0) {
-            peopleVBox.getChildren().add(new Label("Nothing to show"));
+            peopleScrollPane.setContent(new Label("Nothing to show"));
             return;
         }
 
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            peopleVBox.getChildren().add(temp);
+        VBox tempVb = new VBox();
 
+        for (Document curr : list){
+            String id = curr.getInteger("_id").toString();
+            String username = curr.getString("username");
+            Label text = new Label(username);
+            Hyperlink hyperlink = new Hyperlink("user: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/id" + id));
+
+            tempVb.getChildren().addAll(hyperlink, text, new Label("\n"));
         }
+        peopleScrollPane.setContent(tempVb);
     }
 
     @FXML
     public void peopleFind(){
-        peopleVBox.getChildren().clear();
+
         List<Document> list = DBController.getPeople(peopleTextField.getText());
-        System.out.println(peopleTextField.getText());
+
         if(list.size() == 0) {
-            peopleVBox.getChildren().add(new Label("Nothing to show"));
+            peopleScrollPane.setContent(new Label("Nothing to show"));
             return;
         }
 
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            peopleVBox.getChildren().add(temp);
-
-        }
-    }
-
-    @FXML
-    public void photoShowAll(){
-        photosVBox.getChildren().clear();
-        List<Document> list = DBController.getPhoto();
-        if(list.size() == 0) {
-            photosVBox.getChildren().add(new Label("Nothing to show"));
-            return;
-        }
+        VBox tempVb = new VBox();
 
         for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            photosVBox.getChildren().add(temp);
+            String id = curr.getInteger("_id").toString();
+            String username = curr.getString("username");
+            Label text = new Label(username);
+            Hyperlink hyperlink = new Hyperlink("user: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/id" + id));
 
+            tempVb.getChildren().addAll(hyperlink, text, new Label("\n"));
         }
-    }
-
-    @FXML
-    public void photoFind(){
-        photosVBox.getChildren().clear();
-        List<Document> list = DBController.getPhoto(photoTextField.getText());
-        if(list.size() == 0) {
-            photosVBox.getChildren().add(new Label("Nothing to show"));
-            return;
-        }
-
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            photosVBox.getChildren().add(temp);
-
-        }
+        peopleScrollPane.setContent(tempVb);
     }
 
     @FXML
     public void postShowAll(){
-        postVBox.getChildren().clear();
         List<Document> list = DBController.getPost();
         if(list.size() == 0) {
-            postVBox.getChildren().add(new Label("Nothing to show"));
+            postsScrollPane.setContent(new Label("Nothing to show"));
+            return;
+        }
+        VBox tempVb = new VBox();
+
+        for (Document curr : list){
+            String fromId = curr.getInteger("fromid").toString();
+            String id = curr.getInteger("_id").toString();
+            Label text = new Label(curr.getString("text"));
+            Hyperlink hyperlink = new Hyperlink("Post: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/fave?section=likes_posts&w=wall" + fromId + "_" + id));
+
+            tempVb.getChildren().addAll(hyperlink, text, new Label("\n\n"));
+        }
+        postsScrollPane.setContent(tempVb);
+    }
+
+    @FXML
+    public void postAdvancedClicked(){
+        List<Document> list = DBController.getPostAttachments(postAdvanced.getText());
+        if(list.size() == 0) {
+            postsScrollPane.setContent(new Label("Nothing to show"));
             return;
         }
 
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            postVBox.getChildren().add(temp);
+        VBox tempVb = new VBox();
 
+        for (Document curr : list){
+            String attachmentsStr = curr.getString("attachments");
+            if (attachmentsStr.length() < 2) continue;
+            String fromId = curr.getInteger("fromid").toString();
+            String id = curr.getInteger("_id").toString();
+            Label text = new Label(curr.getString("text"));
+            Hyperlink hyperlink = new Hyperlink("Post: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/fave?section=likes_posts&w=wall" + fromId + "_" + id));
+            Label attachments = new Label(attachmentsStr);
+
+            tempVb.getChildren().addAll(hyperlink, text, new Label("Music:"), attachments, new Label("\n\n"));
         }
+        postsScrollPane.setContent(tempVb);
     }
 
     @FXML
     public void postFind(){
-        postVBox.getChildren().clear();
         List<Document> list = DBController.getPost(postTextField.getText());
         if(list.size() == 0) {
-            postVBox.getChildren().add(new Label("Nothing to show"));
+            postsScrollPane.setContent(new Label("Nothing to show"));
             return;
         }
 
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            postVBox.getChildren().add(temp);
+        VBox tempVb = new VBox();
 
+        for (Document curr : list){
+            String fromId = curr.getInteger("fromid").toString();
+            String id = curr.getInteger("_id").toString();
+            Label text = new Label(curr.getString("text"));
+            Hyperlink hyperlink = new Hyperlink("Post: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/fave?section=likes_posts&w=wall" + fromId + "_" + id));
+
+            tempVb.getChildren().addAll(hyperlink, text, new Label("\n\n"));
         }
+        postsScrollPane.setContent(tempVb);
     }
 
     @FXML
     public void videoShowAll(){
-        videoVBox.getChildren().clear();
+
         List<Document> list = DBController.getVideo();
         if(list.size() == 0) {
-            videoVBox.getChildren().add(new Label("Nothing to show"));
+            videoScrollPane.setContent(new Label("Nothing to show"));
             return;
         }
 
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            videoVBox.getChildren().add(temp);
+        VBox tempVb = new VBox();
 
+        for (Document curr : list){
+            String fromId = curr.getInteger("ownerid").toString();
+            String id = curr.getInteger("_id").toString();
+            Label text = new Label(curr.getString("text"));
+            Hyperlink hyperlink = new Hyperlink("Video: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/fave?section=likes_video&z=video" + fromId + "_" + id));
+
+            tempVb.getChildren().addAll(hyperlink, text, new Label("\n\n"));
         }
+        videoScrollPane.setContent(tempVb);
     }
 
     @FXML
     public void videoFind(){
-        videoVBox.getChildren().clear();
+
         List<Document> list = DBController.getVideo(videoTextField.getText());
         if(list.size() == 0) {
-            videoVBox.getChildren().add(new Label("Nothing to show"));
+            videoScrollPane.setContent(new Label("Nothing to show"));
             return;
         }
 
-        for (Document curr : list){
-            Label temp = new Label(curr.toString());
-            videoVBox.getChildren().add(temp);
+        VBox tempVb = new VBox();
 
+        for (Document curr : list){
+            String fromId = curr.getInteger("ownerid").toString();
+            String id = curr.getInteger("_id").toString();
+            Label text = new Label(curr.getString("text"));
+            Hyperlink hyperlink = new Hyperlink("Video: " + curr.getInteger("_id").toString());
+            hyperlink.setOnAction(event -> getHostServices().showDocument("https://vk.com/fave?section=likes_video&z=video" + fromId + "_" + id));
+
+            tempVb.getChildren().addAll(hyperlink, text, new Label("\n\n"));
         }
+        videoScrollPane.setContent(tempVb);
     }
 
     public static void main(String[] args) {
@@ -193,9 +223,9 @@ public class UI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("vkapi.fxml"));
-
-        Scene scene = new Scene(root, 900, 700);
+        Scene scene = new Scene(root, 1000, 700);
         stage.setTitle("VK bookmarks");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }

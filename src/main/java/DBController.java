@@ -2,23 +2,21 @@ import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.vk.api.sdk.objects.photos.Photo;
+import com.vk.api.sdk.objects.audio.AudioFull;
 import com.vk.api.sdk.objects.users.UserMin;
 import com.vk.api.sdk.objects.video.Video;
+import com.vk.api.sdk.objects.wall.WallpostAttachment;
 import com.vk.api.sdk.objects.wall.WallpostFull;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
 import static com.mongodb.client.model.Filters.regex;
 
 public class DBController {
     private static String strCollPeople = "people";
-    private static String strCollPhoto = "photo";
     private static String strCollVideo = "video";
     private static String strCollPosts = "posts";
     private static final String databaseName = "bookmarks";
@@ -37,8 +35,7 @@ public class DBController {
             MongoCollection<Document> coll = mongoDB.getCollection(strCollPeople);
             for (UserMin user : users) {
                 Document doc = new Document("_id", user.getId())
-                        .append("name", user.getFirstName())
-                        .append("surname", user.getLastName());
+                        .append("username", user.getFirstName() + " " + user.getLastName());
                 coll.insertOne(doc);
             }
         } catch (Exception e) {
@@ -50,24 +47,33 @@ public class DBController {
         try {
             MongoCollection<Document> coll = mongoDB.getCollection(strCollPosts);
             for (WallpostFull post : posts) {
+                List<WallpostAttachment> attachments = post.getAttachments();
+
+                if(attachments!=null) {
+                    StringBuilder tempAudio = new StringBuilder();
+                    tempAudio.delete(0, tempAudio.length());
+                    for (WallpostAttachment temp : attachments) {
+                        if (temp == null) continue;
+                        AudioFull audio = temp.getAudio();
+                        if (audio == null) continue;
+                         tempAudio.append(audio.getArtist()).append(" - ").append(audio.getTitle()).append("\n");
+                    }
+
                 Document doc = new Document("_id", post.getId())
                         .append("text", post.getText())
-                        .append("ownerid", post.getOwnerId());
+                        .append("ownerid", post.getOwnerId())
+                        .append("fromid", post.getFromId())
+                        .append("attachments", tempAudio.toString());
                 coll.insertOne(doc);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void dbAddPhotos(List<Photo> photos){
-        try {
-            MongoCollection<Document> coll = mongoDB.getCollection(strCollPhoto);
-            for (Photo photo : photos) {
-                Document doc = new Document("_id", photo.getId())
-                        .append("text", photo.getText())
-                        .append("ownerid", photo.getOwnerId());
-                coll.insertOne(doc);
+                }
+                else {
+                    Document doc = new Document("_id", post.getId())
+                            .append("text", post.getText())
+                            .append("ownerid", post.getOwnerId())
+                            .append("fromid", post.getFromId())
+                            .append("attachments", "");
+                    coll.insertOne(doc);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,36 +111,7 @@ public class DBController {
     public static List<Document> getPeople(String request){
         List<Document> list = new LinkedList<Document>();
         String pattern = ".*" + request + ".*";
-        MongoCursor<Document> cursor = mongoDB.getCollection(strCollPeople).find(regex("name", pattern)).iterator();
-        try {
-            while(cursor.hasNext()) {
-                list.add(cursor.next());
-            }
-        }
-        finally {
-            cursor.close();
-        }
-        return list;
-    }
-
-    public static List<Document> getPhoto(){
-        List<Document> list = new LinkedList<Document>();
-        MongoCursor<Document> cursor = mongoDB.getCollection(strCollPhoto).find().iterator();
-        try {
-            while(cursor.hasNext()) {
-                list.add(cursor.next());
-            }
-        }
-        finally {
-            cursor.close();
-        }
-        return list;
-    }
-
-    public static List<Document> getPhoto(String request){
-        List<Document> list = new LinkedList<Document>();
-        String pattern = ".*" + request + ".*";
-        MongoCursor<Document> cursor = mongoDB.getCollection(strCollPhoto).find(regex("text", pattern)).iterator();
+        MongoCursor<Document> cursor = mongoDB.getCollection(strCollPeople).find(regex("username", pattern)).iterator();
         try {
             while(cursor.hasNext()) {
                 list.add(cursor.next());
@@ -164,6 +141,21 @@ public class DBController {
         List<Document> list = new LinkedList<Document>();
         String pattern = ".*" + request + ".*";
         MongoCursor<Document> cursor = mongoDB.getCollection(strCollPosts).find(regex("text", pattern)).iterator();
+        try {
+            while(cursor.hasNext()) {
+                list.add(cursor.next());
+            }
+        }
+        finally {
+            cursor.close();
+        }
+        return list;
+    }
+
+    public static List<Document> getPostAttachments(String request){
+        List<Document> list = new LinkedList<Document>();
+        String pattern = ".*" + request + ".*";
+        MongoCursor<Document> cursor = mongoDB.getCollection(strCollPosts).find(regex("attachments", pattern)).iterator();
         try {
             while(cursor.hasNext()) {
                 list.add(cursor.next());
