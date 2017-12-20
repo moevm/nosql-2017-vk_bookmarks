@@ -67,12 +67,6 @@ public class VkAuth{
                         List<WallpostFull> posts = response.getItems();
                         DBController.dbAddPosts(posts);
 
-                        GetPhotosResponse photosResponse = vk.fave().
-                                getPhotos(actor).
-                                execute();
-                        List<Photo> photos = photosResponse.getItems();
-                        DBController.dbAddPhotos(photos);
-
                         GetVideosResponse videosResponse = vk.fave().
                                 getVideos(actor).
                                 execute();
